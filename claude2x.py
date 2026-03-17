@@ -14,7 +14,7 @@ import rumps
 from datetime import datetime, timedelta
 import pytz
 from AppKit import (NSAppearance, NSAppearanceNameDarkAqua, NSApplication,
-                    NSAttributedString, NSForegroundColorAttributeName, NSColor)
+                    NSObject)
 
 # Hide from Dock and App Switcher — must run before anything else
 NSApplication.sharedApplication().setActivationPolicy_(1)  # NSApplicationActivationPolicyAccessory
@@ -26,7 +26,6 @@ NSApplication.sharedApplication().setActivationPolicy_(1)  # NSApplicationActiva
 PT  = pytz.timezone("America/Los_Angeles")
 WIB = pytz.timezone("Asia/Jakarta")  # GMT+7
 
-# Frames live next to the script (works both locally and in ~/.claude2x)
 FRAMES_DIR  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "frames")
 FRAME_COUNT = 24
 ANIM_FPS    = 0.05  # seconds per frame (~20fps)
@@ -35,6 +34,9 @@ PLIST_LABEL = "com.claude2x.app"
 PLIST_PATH  = os.path.expanduser(f"~/Library/LaunchAgents/{PLIST_LABEL}.plist")
 SCRIPT_PATH = os.path.abspath(__file__)
 PYTHON_BIN  = "/Library/Frameworks/Python.framework/Versions/3.10/bin/python3"
+
+# NSMenuItem tag used to identify non-interactive info items
+INFO_TAG = 1
 
 
 # ---------------------------------------------------------------------------
@@ -112,11 +114,18 @@ def build_menu_content(is_2x, now_pt):
     return dict(title=title, line1=line1, line2=line2)
 
 
-def _white_attr(text):
-    """White attributed string — keeps text bright on dark menu even when item is disabled."""
-    return NSAttributedString.alloc().initWithString_attributes_(
-        text, {NSForegroundColorAttributeName: NSColor.whiteColor()}
-    )
+def noop(_): pass
+
+
+# ---------------------------------------------------------------------------
+# Menu delegate — suppresses hover highlight on info items (tag == INFO_TAG)
+# Items stay enabled so macOS renders them at full white (WCAG compliant).
+# ---------------------------------------------------------------------------
+
+class NoHighlightDelegate(NSObject):
+    def menu_willHighlightItem_(self, menu, item):
+        if item is not None and item.tag() == INFO_TAG:
+            menu.highlightItem_(None)
 
 
 # ---------------------------------------------------------------------------
@@ -132,21 +141,20 @@ class Claude2xApp(rumps.App):
         self._frames      = frames
         self._frame_index = 0
 
-        # Info items have no callback → disabled by AppKit (no hover highlight).
-        # White attributed titles are applied in _setup_appearance once the menu exists.
+        # All info items keep callback=noop so they stay enabled (full-white text).
+        # The NoHighlightDelegate suppresses the hover highlight for tagged items.
         self.menu = [
-            rumps.MenuItem("line1"),
-            rumps.MenuItem("line2"),
+            rumps.MenuItem("line1", callback=noop),
+            rumps.MenuItem("line2", callback=noop),
             rumps.separator,
-            rumps.MenuItem("sched_header"),
-            rumps.MenuItem("sched_1"),
-            rumps.MenuItem("sched_2"),
+            rumps.MenuItem("sched_header", callback=noop),
+            rumps.MenuItem("sched_1", callback=noop),
+            rumps.MenuItem("sched_2", callback=noop),
             rumps.separator,
             rumps.MenuItem("Start at Login", callback=self.toggle_login),
             rumps.separator,
         ]
 
-        # Set static schedule copy
         self.menu["sched_header"].title = "2× is active:"
         self.menu["sched_1"].title      = "  •  Mon–Fri   7 PM – 1 AM WIB"
         self.menu["sched_2"].title      = "  •  Sat–Sun   All day"
@@ -157,15 +165,17 @@ class Claude2xApp(rumps.App):
     @rumps.timer(0.5)
     def _setup_appearance(self, sender):
         try:
-            dark = NSAppearance.appearanceNamed_(NSAppearanceNameDarkAqua)
-            self._nsapp.nsstatusitem.menu().setAppearance_(dark)
+            dark    = NSAppearance.appearanceNamed_(NSAppearanceNameDarkAqua)
+            ns_menu = self._nsapp.nsstatusitem.menu()
+            ns_menu.setAppearance_(dark)
 
-            # Disable all info items (removes hover highlight) and force white text
+            # Tag all info items — delegate will clear their hover highlight
             for key in ["line1", "line2", "sched_header", "sched_1", "sched_2"]:
-                item    = self.menu[key]
-                ns_item = item._menuitem
-                ns_item.setEnabled_(False)
-                ns_item.setAttributedTitle_(_white_attr(item.title))
+                self.menu[key]._menuitem.setTag_(INFO_TAG)
+
+            # Attach delegate (keep strong reference to prevent GC)
+            self._menu_delegate = NoHighlightDelegate.alloc().init()
+            ns_menu.setDelegate_(self._menu_delegate)
 
             sender.stop()
         except Exception:
@@ -190,16 +200,9 @@ class Claude2xApp(rumps.App):
     def update_status(self):
         is_2x, now_pt = get_status()
         content = build_menu_content(is_2x, now_pt)
-        self.title = content["title"]
-
-        for key in ["line1", "line2"]:
-            item    = self.menu[key]
-            item.title = content[key]
-            # Keep attributed title in sync so white color persists after refresh
-            try:
-                item._menuitem.setAttributedTitle_(_white_attr(item.title))
-            except Exception:
-                pass
+        self.title                   = content["title"]
+        self.menu["line1"].title     = content["line1"]
+        self.menu["line2"].title     = content["line2"]
 
 
 if __name__ == "__main__":

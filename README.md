@@ -23,6 +23,12 @@ That's it. The icon lives in your menubar and wakes up automatically every time 
 
 <br>
 
+**To update:**
+```bash
+brew upgrade swidaryanto/tap/claude2x
+brew services restart swidaryanto/tap/claude2x
+```
+
 **To stop it:**
 ```bash
 brew services stop claude2x
