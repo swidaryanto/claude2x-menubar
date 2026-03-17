@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 import pytz
 from AppKit import (NSAppearance, NSAppearanceNameDarkAqua, NSApplication,
                     NSView, NSTextField, NSFont, NSColor)
+from Foundation import NSObject, NSTimer, NSRunLoop
 
 # Hide from Dock and App Switcher — must run before anything else
 NSApplication.sharedApplication().setActivationPolicy_(1)  # NSApplicationActivationPolicyAccessory
@@ -117,6 +118,22 @@ def noop(_): pass
 
 
 # ---------------------------------------------------------------------------
+# Animation timer helper
+# rumps schedules timers in NSDefaultRunLoopMode, which macOS suspends while
+# a menu is open (NSEventTrackingRunLoopMode). To keep the icon animating
+# during menu display, we create the NSTimer manually and add it to
+# NSRunLoopCommonModes — which fires in both modes.
+# ---------------------------------------------------------------------------
+
+class AnimTick(NSObject):
+    def setCallback_(self, cb):
+        self._cb = cb
+
+    def tick_(self, _timer):
+        self._cb()
+
+
+# ---------------------------------------------------------------------------
 # Custom label view
 # Renders white text independently of NSMenuItem's enabled/disabled state.
 # setEnabled_(False) on the NSMenuItem prevents hover — the custom view
@@ -188,12 +205,20 @@ class Claude2xApp(rumps.App):
                 item._menuitem.setEnabled_(False)
                 self._labels[key] = label
 
+            # Animation timer in NSRunLoopCommonModes — keeps firing while menu is open
+            self._anim_tick = AnimTick.alloc().init()
+            self._anim_tick.setCallback_(self._advance_frame)
+            anim_timer = NSTimer.timerWithTimeInterval_target_selector_userInfo_repeats_(
+                ANIM_FPS, self._anim_tick, "tick:", None, True
+            )
+            NSRunLoop.mainRunLoop().addTimer_forMode_(anim_timer, "NSRunLoopCommonModes")
+            self._anim_timer = anim_timer
+
             sender.stop()
         except Exception:
             pass
 
-    @rumps.timer(ANIM_FPS)
-    def animate(self, _):
+    def _advance_frame(self):
         self._frame_index = (self._frame_index + 1) % len(self._frames)
         self.icon = self._frames[self._frame_index]
 
