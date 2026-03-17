@@ -6,14 +6,26 @@ A tiny macOS menubar app that tells you **when you're getting double Claude usag
 
 ## Install
 
+### Option A — Homebrew *(recommended)*
+
+If you have [Homebrew](https://brew.sh) installed, paste this in Terminal:
+
+```bash
+brew install --cask swidaryanto/tap/claude2x
+```
+
+No Gatekeeper prompts. Uninstall anytime with `brew uninstall --cask claude2x`.
+
+<br>
+
+### Option B — DMG
+
 **[→ Download Claude2x.dmg](https://github.com/swidaryanto/claude2x-menubar/releases/latest/download/Claude2x.dmg)**
 
 1. Open `Claude2x.dmg`
 2. Drag **Claude 2x** into your Applications folder
 3. **Right-click** Claude 2x → **Open** → **Open** again when macOS asks
 4. The icon appears in your menubar instantly
-
-<br>
 
 > **To uninstall**, drag **Claude 2x** from Applications to Trash.
 
