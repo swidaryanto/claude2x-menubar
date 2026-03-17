@@ -16,8 +16,11 @@ Choose the option that works best for you:
 
 1. Open `Claude2x.dmg`
 2. Drag **Claude 2x** into your Applications folder
-3. **Right-click** Claude 2x → **Open** *(one-time step — macOS asks this for apps outside the App Store)*
-4. The icon appears in your menubar instantly
+3. Open **Terminal** (`⌘ Space` → type `Terminal` → Enter) and paste:
+   ```bash
+   xattr -cr /Applications/Claude2x.app
+   ```
+4. Double-click **Claude 2x** — the icon appears in your menubar instantly
 
 <br>
 
