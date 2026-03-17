@@ -6,12 +6,11 @@ A tiny macOS menubar app that tells you **when you're getting double Claude usag
 
 **[→ Download Claude2x.dmg](https://github.com/swidaryanto/claude2x-menubar/releases/latest/download/Claude2x.dmg)**
 
-1. Open `Claude2x.dmg`
+1. Download and open `Claude2x.dmg`
 2. Drag **Claude 2x** into your Applications folder
-3. Open it — the icon appears in your menubar instantly
-4. Click the icon → check **Start at Login** so it's always there
-
-> First time opening? macOS may ask you to confirm. Go to **System Settings → Privacy & Security → Open Anyway**.
+3. **Right-click** Claude 2x → **Open** (do this once — macOS asks for confirmation on apps outside the App Store)
+4. The icon appears in your menubar instantly
+5. Click the icon → check **Start at Login** so it's always there
 
 ## What is the 2x promotion?
 
