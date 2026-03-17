@@ -59,8 +59,8 @@ You're on double limits
 Until 7:00 PM WIB  ·  1h 40m left
 
 2× is active:
-  •  Mon–Fri   1 AM – 7 PM WIB
-  •  Sat–Sun   All day
+  •  Mon–Fri  ·  1 AM – 7 PM WIB
+  •  Sat–Sun  ·  All day
 
 ✓ Start at Login
 ```

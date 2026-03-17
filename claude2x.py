@@ -165,8 +165,8 @@ class Claude2xApp(rumps.App):
         ]
 
         self.menu["sched_header"].title = "2× is active:"
-        self.menu["sched_1"].title      = "  •  Mon–Fri   1 AM – 7 PM WIB"
-        self.menu["sched_2"].title      = "  •  Sat–Sun   All day"
+        self.menu["sched_1"].title      = "  •  Mon–Fri  ·  1 AM – 7 PM WIB"
+        self.menu["sched_2"].title      = "  •  Sat–Sun  ·  All day"
 
         self.menu["Start at Login"].state = is_login_enabled()
         self.update_status()
