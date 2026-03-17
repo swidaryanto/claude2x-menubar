@@ -13,7 +13,10 @@ import plistlib
 import rumps
 from datetime import datetime, timedelta
 import pytz
-from AppKit import NSAppearance, NSAppearanceNameDarkAqua
+from AppKit import NSAppearance, NSAppearanceNameDarkAqua, NSApplication
+
+# Hide from Dock and App Switcher — must run before anything else
+NSApplication.sharedApplication().setActivationPolicy_(1)  # NSApplicationActivationPolicyAccessory
 
 # ---------------------------------------------------------------------------
 # Constants

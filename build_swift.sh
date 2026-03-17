@@ -41,8 +41,19 @@ EOF
 echo "→ Ad-hoc signing (prevents 'damaged' error)..."
 codesign --force --deep --sign - "$APP"
 
-echo "→ Creating DMG..."
-hdiutil create -volname "Claude 2x" -srcfolder "$APP" -ov -format UDZO Claude2x.dmg
+echo "→ Creating DMG with create-dmg..."
+rm -f Claude2x.dmg
+create-dmg \
+  --volname "Claude 2x" \
+  --window-pos 200 120 \
+  --window-size 540 380 \
+  --icon-size 128 \
+  --icon "Claude2x.app" 140 190 \
+  --hide-extension "Claude2x.app" \
+  --app-drop-link 400 190 \
+  --no-internet-enable \
+  Claude2x.dmg \
+  dist_swift/
 
 SIZE=$(du -sh Claude2x.dmg | cut -f1)
 echo "✓ Done — Claude2x.dmg ($SIZE)"
