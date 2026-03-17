@@ -14,7 +14,7 @@ import rumps
 from datetime import datetime, timedelta
 import pytz
 from AppKit import (NSAppearance, NSAppearanceNameDarkAqua, NSApplication,
-                    NSObject)
+                    NSView, NSTextField, NSFont, NSColor)
 
 # Hide from Dock and App Switcher — must run before anything else
 NSApplication.sharedApplication().setActivationPolicy_(1)  # NSApplicationActivationPolicyAccessory
@@ -35,8 +35,7 @@ PLIST_PATH  = os.path.expanduser(f"~/Library/LaunchAgents/{PLIST_LABEL}.plist")
 SCRIPT_PATH = os.path.abspath(__file__)
 PYTHON_BIN  = "/Library/Frameworks/Python.framework/Versions/3.10/bin/python3"
 
-# NSMenuItem tag used to identify non-interactive info items
-INFO_TAG = 1
+INFO_KEYS   = ["line1", "line2", "sched_header", "sched_1", "sched_2"]
 
 
 # ---------------------------------------------------------------------------
@@ -118,14 +117,25 @@ def noop(_): pass
 
 
 # ---------------------------------------------------------------------------
-# Menu delegate — suppresses hover highlight on info items (tag == INFO_TAG)
-# Items stay enabled so macOS renders them at full white (WCAG compliant).
+# Custom label view
+# Renders white text independently of NSMenuItem's enabled/disabled state.
+# setEnabled_(False) on the NSMenuItem prevents hover — the custom view
+# controls appearance, so system disabled-dimming never touches the text.
 # ---------------------------------------------------------------------------
 
-class NoHighlightDelegate(NSObject):
-    def menu_willHighlightItem_(self, menu, item):
-        if item is not None and item.tag() == INFO_TAG:
-            menu.highlightItem_(None)
+def _make_label_view(text):
+    """Return (NSView container, NSTextField label) for a non-interactive menu row."""
+    outer = NSView.alloc().initWithFrame_(((0, 0), (300, 20)))
+    label = NSTextField.alloc().initWithFrame_(((20, 3), (272, 15)))
+    label.setStringValue_(text)
+    label.setEditable_(False)
+    label.setSelectable_(False)
+    label.setBezeled_(False)
+    label.setDrawsBackground_(False)
+    label.setTextColor_(NSColor.whiteColor())
+    label.setFont_(NSFont.menuFontOfSize_(13.0))
+    outer.addSubview_(label)
+    return outer, label
 
 
 # ---------------------------------------------------------------------------
@@ -140,9 +150,8 @@ class Claude2xApp(rumps.App):
 
         self._frames      = frames
         self._frame_index = 0
+        self._labels      = {}   # key → NSTextField; populated in _setup_appearance
 
-        # All info items keep callback=noop so they stay enabled (full-white text).
-        # The NoHighlightDelegate suppresses the hover highlight for tagged items.
         self.menu = [
             rumps.MenuItem("line1", callback=noop),
             rumps.MenuItem("line2", callback=noop),
@@ -169,13 +178,15 @@ class Claude2xApp(rumps.App):
             ns_menu = self._nsapp.nsstatusitem.menu()
             ns_menu.setAppearance_(dark)
 
-            # Tag all info items — delegate will clear their hover highlight
-            for key in ["line1", "line2", "sched_header", "sched_1", "sched_2"]:
-                self.menu[key]._menuitem.setTag_(INFO_TAG)
-
-            # Attach delegate (keep strong reference to prevent GC)
-            self._menu_delegate = NoHighlightDelegate.alloc().init()
-            ns_menu.setDelegate_(self._menu_delegate)
+            # Attach custom label views to info items:
+            # - NSTextField renders full-white text (no system disabled dimming)
+            # - setEnabled_(False) removes hover highlight entirely
+            for key in INFO_KEYS:
+                item = self.menu[key]
+                outer, label = _make_label_view(item.title)
+                item._menuitem.setView_(outer)
+                item._menuitem.setEnabled_(False)
+                self._labels[key] = label
 
             sender.stop()
         except Exception:
@@ -200,9 +211,16 @@ class Claude2xApp(rumps.App):
     def update_status(self):
         is_2x, now_pt = get_status()
         content = build_menu_content(is_2x, now_pt)
-        self.title                   = content["title"]
-        self.menu["line1"].title     = content["line1"]
-        self.menu["line2"].title     = content["line2"]
+        self.title = content["title"]
+
+        for key in ["line1", "line2"]:
+            text = content[key]
+            if key in self._labels:
+                # Update custom label view text directly
+                self._labels[key].setStringValue_(text)
+            else:
+                # Fallback before _setup_appearance fires (first ~0.5s)
+                self.menu[key].title = text
 
 
 if __name__ == "__main__":

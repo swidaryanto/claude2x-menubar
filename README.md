@@ -6,7 +6,7 @@ No more guessing the timezone. No more missing your best window to work.
 
 <br>
 
-## Get it in 2 steps
+## Install
 
 Open Terminal (`⌘ Space` → type `Terminal` → Enter):
 
@@ -23,18 +23,20 @@ That's it. The icon lives in your menubar and wakes up automatically every time 
 
 <br>
 
-**To update:**
+## Manage
+
+**Update to the latest version:**
 ```bash
 brew upgrade swidaryanto/tap/claude2x
 brew services restart swidaryanto/tap/claude2x
 ```
 
-**To stop it:**
+**Stop it:**
 ```bash
 brew services stop claude2x
 ```
 
-**To uninstall:**
+**Uninstall:**
 ```bash
 brew services stop claude2x && brew uninstall claude2x
 ```
@@ -43,12 +45,27 @@ brew services stop claude2x && brew uninstall claude2x
 
 ## What you'll see
 
+The icon in your menubar switches between two states:
+
 | Icon | Means |
 |---|---|
 | `2x` | Double limits active — best time to use Claude |
 | `1x` | Standard limits right now |
 
-Click the icon anytime for a live countdown to the next switch, shown in your local time **(WIB · GMT+7)**.
+Click the icon anytime to open the menu:
+
+```
+You're on double limits
+Until 7:00 PM WIB  ·  1h 40m left
+
+2× is active:
+  •  Mon–Fri   7 PM – 1 AM WIB
+  •  Sat–Sun   All day
+
+✓ Start at Login
+```
+
+Times are shown in **WIB (GMT+7)** — no timezone math needed.
 
 <br>
 
@@ -68,13 +85,12 @@ Works across all plans (Free, Pro, Max, Team) and everywhere you use Claude — 
 ## What makes it tick
 
 - Animated icon that floats in your menubar — you'll notice it
-- Live countdown so you know exactly how long until the next switch
+- Live countdown to the next switch, updated every 30 seconds
 - Times shown in WIB — no timezone math needed
-- Starts automatically at login, runs quietly in the background
+- Toggle **Start at Login** right from the menu
+- Runs quietly in the background, zero config needed
 
 <br>
-
----
 
 ## Heads up
 
