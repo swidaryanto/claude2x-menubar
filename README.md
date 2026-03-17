@@ -6,12 +6,6 @@ A tiny macOS menubar app that tells you **when you're getting double Claude usag
 
 ## Install
 
-Choose the option that works best for you:
-
-<br>
-
-### Option A — DMG (Swift native, 40KB)
-
 **[→ Download Claude2x.dmg](https://github.com/swidaryanto/claude2x-menubar/releases/latest/download/Claude2x.dmg)**
 
 1. Open `Claude2x.dmg`
@@ -24,23 +18,7 @@ Choose the option that works best for you:
 
 <br>
 
-### Option B — One-line installer (Python)
-
-Open **Terminal** (`⌘ Space` → type `Terminal` → Enter) and paste:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/swidaryanto/claude2x-menubar/main/install.sh | bash
-```
-
-The icon appears in your menubar and starts automatically on every login. No DMG, no Gatekeeper prompt.
-
-<br>
-
-> **To uninstall**, paste this in Terminal:
-> ```bash
-> launchctl unload ~/Library/LaunchAgents/com.claude2x.app.plist
-> rm -rf ~/.claude2x ~/Library/LaunchAgents/com.claude2x.app.plist
-> ```
+> **To uninstall**, drag **Claude 2x** from Applications to Trash.
 
 <br>
 
