@@ -38,9 +38,6 @@ cat > "$CONTENTS/Info.plist" << 'EOF'
 </plist>
 EOF
 
-echo "→ Ad-hoc signing (prevents 'damaged' error)..."
-codesign --force --deep --sign - "$APP"
-
 echo "→ Creating DMG with create-dmg..."
 rm -f Claude2x.dmg
 create-dmg \
