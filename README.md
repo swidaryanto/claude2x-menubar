@@ -59,7 +59,7 @@ You're on double limits
 Until 7:00 PM WIB  ·  1h 40m left
 
 2× is active:
-  •  Mon–Fri   7 PM – 1 AM WIB
+  •  Mon–Fri   1 AM – 7 PM WIB
   •  Sat–Sun   All day
 
 ✓ Start at Login
@@ -75,7 +75,7 @@ Anthropic doubles usage limits outside peak hours — a thank-you to everyone us
 
 | Day | Your time (WIB) | US time (PT) |
 |---|---|---|
-| Monday – Friday | 7:00 PM – 1:00 AM | 5:00 AM – 11:00 AM |
+| Monday – Friday | 1:00 AM – 7:00 PM | 5:00 AM – 11:00 AM |
 | Saturday – Sunday | All day | All day |
 
 Works across all plans (Free, Pro, Max, Team) and everywhere you use Claude — including Claude Code.
