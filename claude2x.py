@@ -14,8 +14,8 @@ import rumps
 from datetime import datetime, timedelta
 import pytz
 from AppKit import (NSAppearance, NSAppearanceNameDarkAqua, NSApplication,
-                    NSView, NSTextField, NSFont, NSColor)
-from Foundation import NSObject, NSTimer, NSRunLoop
+                    NSView, NSTextField, NSFont, NSColor, NSImage)
+from Foundation import NSTimer, NSDate, NSRunLoop, NSRunLoopCommonModes
 
 # Hide from Dock and App Switcher — must run before anything else
 NSApplication.sharedApplication().setActivationPolicy_(1)  # NSApplicationActivationPolicyAccessory
@@ -118,26 +118,9 @@ def noop(_): pass
 
 
 # ---------------------------------------------------------------------------
-# Animation timer helper
-# rumps schedules timers in NSDefaultRunLoopMode, which macOS suspends while
-# a menu is open (NSEventTrackingRunLoopMode). To keep the icon animating
-# during menu display, we create the NSTimer manually and add it to
-# NSRunLoopCommonModes — which fires in both modes.
-# ---------------------------------------------------------------------------
-
-class AnimTick(NSObject):
-    def setCallback_(self, cb):
-        self._cb = cb
-
-    def tick_(self, _timer):
-        self._cb()
-
-
-# ---------------------------------------------------------------------------
 # Custom label view
 # Renders white text independently of NSMenuItem's enabled/disabled state.
-# setEnabled_(False) on the NSMenuItem prevents hover — the custom view
-# controls appearance, so system disabled-dimming never touches the text.
+# setEnabled_(False) prevents hover; custom view bypasses disabled dimming.
 # ---------------------------------------------------------------------------
 
 def _make_label_view(text):
@@ -161,13 +144,21 @@ def _make_label_view(text):
 
 class Claude2xApp(rumps.App):
     def __init__(self):
-        frames = [os.path.join(FRAMES_DIR, f"frame_{i:03d}.png")
-                  for i in range(FRAME_COUNT)]
-        super().__init__("1x", icon=frames[0], template=True, quit_button="Quit")
+        frame_paths = [os.path.join(FRAMES_DIR, f"frame_{i:03d}.png")
+                       for i in range(FRAME_COUNT)]
 
-        self._frames      = frames
+        super().__init__("1x", icon=frame_paths[0], template=True, quit_button="Quit")
+
         self._frame_index = 0
-        self._labels      = {}   # key → NSTextField; populated in _setup_appearance
+
+        # Pre-load all frames as NSImage objects — zero file I/O per animation tick
+        self._frame_images = []
+        for path in frame_paths:
+            img = NSImage.alloc().initWithContentsOfFile_(path)
+            img.setTemplate_(True)
+            self._frame_images.append(img)
+
+        self._labels = {}  # key → NSTextField; populated in _setup_appearance
 
         self.menu = [
             rumps.MenuItem("line1", callback=noop),
@@ -190,37 +181,43 @@ class Claude2xApp(rumps.App):
 
     @rumps.timer(0.5)
     def _setup_appearance(self, sender):
+        import traceback
+
+        # 1. Dark menu + label views
         try:
             dark    = NSAppearance.appearanceNamed_(NSAppearanceNameDarkAqua)
             ns_menu = self._nsapp.nsstatusitem.menu()
             ns_menu.setAppearance_(dark)
 
-            # Attach custom label views to info items:
-            # - NSTextField renders full-white text (no system disabled dimming)
-            # - setEnabled_(False) removes hover highlight entirely
             for key in INFO_KEYS:
                 item = self.menu[key]
                 outer, label = _make_label_view(item.title)
                 item._menuitem.setView_(outer)
                 item._menuitem.setEnabled_(False)
                 self._labels[key] = label
-
-            # Animation timer in NSRunLoopCommonModes — keeps firing while menu is open
-            self._anim_tick = AnimTick.alloc().init()
-            self._anim_tick.setCallback_(self._advance_frame)
-            anim_timer = NSTimer.timerWithTimeInterval_target_selector_userInfo_repeats_(
-                ANIM_FPS, self._anim_tick, "tick:", None, True
-            )
-            NSRunLoop.mainRunLoop().addTimer_forMode_(anim_timer, "NSRunLoopCommonModes")
-            self._anim_timer = anim_timer
-
-            sender.stop()
         except Exception:
-            pass
+            traceback.print_exc()
 
-    def _advance_frame(self):
-        self._frame_index = (self._frame_index + 1) % len(self._frames)
-        self.icon = self._frames[self._frame_index]
+        # 2. Animation — NSTimer with a Python block on the main run loop.
+        #    NSRunLoopCommonModes includes NSEventTrackingRunLoopMode, so the timer
+        #    fires even while the menu is open. Block-based NSTimer (PyObjC 9+) avoids
+        #    custom selector registration entirely. Main-thread execution means no
+        #    thread-safety concerns for AppKit calls.
+        try:
+            self._status_btn = self._nsapp.nsstatusitem.button()
+            timer = NSTimer.alloc().initWithFireDate_interval_repeats_block_(
+                NSDate.date(), ANIM_FPS, True, lambda _t: self._tick()
+            )
+            NSRunLoop.mainRunLoop().addTimer_forMode_(timer, NSRunLoopCommonModes)
+            self._anim_timer = timer
+        except Exception:
+            traceback.print_exc()
+
+        sender.stop()
+
+    def _tick(self):
+        self._frame_index = (self._frame_index + 1) % FRAME_COUNT
+        self._status_btn.setImage_(self._frame_images[self._frame_index])
 
     @rumps.timer(30)
     def refresh(self, _):
@@ -241,10 +238,8 @@ class Claude2xApp(rumps.App):
         for key in ["line1", "line2"]:
             text = content[key]
             if key in self._labels:
-                # Update custom label view text directly
                 self._labels[key].setStringValue_(text)
             else:
-                # Fallback before _setup_appearance fires (first ~0.5s)
                 self.menu[key].title = text
 
 

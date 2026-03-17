@@ -4,6 +4,10 @@ Know exactly when Claude gives you double the usage — right from your menubar.
 
 No more guessing the timezone. No more missing your best window to work.
 
+**🍎 macOS only** — this is a menubar app for Mac. It does not run on Windows, Linux, or mobile.
+
+> **This is the final release.** No further updates are planned. The app works as intended — install it, forget about it.
+
 <br>
 
 ## Install
@@ -24,12 +28,6 @@ That's it. The icon lives in your menubar and wakes up automatically every time 
 <br>
 
 ## Manage
-
-**Update to the latest version:**
-```bash
-brew upgrade swidaryanto/tap/claude2x
-brew services restart swidaryanto/tap/claude2x
-```
 
 **Stop it:**
 ```bash
@@ -85,6 +83,7 @@ Works across all plans (Free, Pro, Max, Team) and everywhere you use Claude — 
 ## What makes it tick
 
 - Animated icon that floats in your menubar — you'll notice it
+- Animation stays smooth even when the menu is open
 - Live countdown to the next switch, updated every 30 seconds
 - Times shown in WIB — no timezone math needed
 - Toggle **Start at Login** right from the menu
@@ -97,6 +96,8 @@ Works across all plans (Free, Pro, Max, Team) and everywhere you use Claude — 
 This is an independent, open-source tool. It's **not affiliated with or endorsed by Anthropic** in any way.
 
 The 2x promotion is fully Anthropic's call — they can change, pause, or end it at any time. This app just reads your clock and shows the schedule [as announced by @claudeai](https://x.com/claudeai/status/2032911276226257206). Think of it as a handy reminder, not a guarantee.
+
+Since this is the final release, no bug reports or feature requests are being tracked. If the schedule ever changes, the app will show the wrong times — that's expected.
 
 <br>
 
