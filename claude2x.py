@@ -22,6 +22,7 @@ from AppKit import NSAppearance, NSAppearanceNameDarkAqua
 PT  = pytz.timezone("America/Los_Angeles")
 WIB = pytz.timezone("Asia/Jakarta")  # GMT+7
 
+# Frames live next to the script (works both locally and in ~/.claude2x)
 FRAMES_DIR  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "frames")
 FRAME_COUNT = 24
 ANIM_FPS    = 0.05  # seconds per frame (~20fps)

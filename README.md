@@ -2,15 +2,21 @@
 
 A tiny macOS menubar app that tells you **when you're getting double Claude usage** — so you always know the best time to work.
 
-## Download
+## Install
 
-**[→ Download Claude2x.dmg](https://github.com/swidaryanto/claude2x-menubar/releases/latest/download/Claude2x.dmg)**
+Open **Terminal** (press `⌘ Space`, type `Terminal`, hit Enter) and paste this:
 
-1. Download and open `Claude2x.dmg`
-2. Drag **Claude 2x** into your Applications folder
-3. **Right-click** Claude 2x → **Open** (do this once — macOS asks for confirmation on apps outside the App Store)
-4. The icon appears in your menubar instantly
-5. Click the icon → check **Start at Login** so it's always there
+```bash
+curl -fsSL https://raw.githubusercontent.com/swidaryanto/claude2x-menubar/main/install.sh | bash
+```
+
+That's it. The icon appears in your menubar and starts automatically on every login.
+
+**To uninstall:**
+```bash
+launchctl unload ~/Library/LaunchAgents/com.claude2x.app.plist
+rm -rf ~/.claude2x ~/Library/LaunchAgents/com.claude2x.app.plist
+```
 
 ## What is the 2x promotion?
 
@@ -37,9 +43,9 @@ The dropdown shows a live countdown to the next state change, in your local time
 ## Features
 
 - **Live status** — updates every 30 seconds
+- **Animated icon** — smooth floating animation
 - **Countdown in WIB** — no mental timezone math
 - **Expiry reminder** — tracks how many days are left in the promotion
-- **Start at Login** — one click, always running
-- **Dark menu** — WCAG-compliant contrast, easy to read
+- **Auto-starts at login** — always running, zero maintenance
 
 Made with ☕ by [@swidaryanto](https://github.com/swidaryanto)
