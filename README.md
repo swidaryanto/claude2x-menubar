@@ -6,13 +6,30 @@ A tiny macOS menubar app that tells you **when you're getting double Claude usag
 
 ## Install
 
-Open **Terminal** (press `⌘ Space`, type `Terminal`, hit Enter) and paste this:
+Choose the option that works best for you:
+
+<br>
+
+### Option A — DMG (Swift native, 40KB)
+
+**[→ Download Claude2x.dmg](https://github.com/swidaryanto/claude2x-menubar/releases/latest/download/Claude2x.dmg)**
+
+1. Open `Claude2x.dmg`
+2. Drag **Claude 2x** into your Applications folder
+3. **Right-click** Claude 2x → **Open** *(one-time step — macOS asks this for apps outside the App Store)*
+4. The icon appears in your menubar instantly
+
+<br>
+
+### Option B — One-line installer (Python)
+
+Open **Terminal** (`⌘ Space` → type `Terminal` → Enter) and paste:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/swidaryanto/claude2x-menubar/main/install.sh | bash
 ```
 
-That's it. The icon appears in your menubar and starts automatically on every login.
+The icon appears in your menubar and starts automatically on every login. No DMG, no Gatekeeper prompt.
 
 <br>
 
@@ -57,7 +74,6 @@ The dropdown shows a live countdown to the next state change, in your local time
 - **Live status** — updates every 30 seconds
 - **Animated icon** — smooth floating animation
 - **Countdown in WIB** — no mental timezone math
-- **Expiry reminder** — tracks how many days are left in the promotion
 - **Auto-starts at login** — always running, zero maintenance
 
 <br>
