@@ -13,7 +13,8 @@ import plistlib
 import rumps
 from datetime import datetime, timedelta
 import pytz
-from AppKit import NSAppearance, NSAppearanceNameDarkAqua, NSApplication
+from AppKit import (NSAppearance, NSAppearanceNameDarkAqua, NSApplication,
+                    NSAttributedString, NSForegroundColorAttributeName, NSColor)
 
 # Hide from Dock and App Switcher — must run before anything else
 NSApplication.sharedApplication().setActivationPolicy_(1)  # NSApplicationActivationPolicyAccessory
@@ -91,28 +92,31 @@ def build_menu_content(is_2x, now_pt):
     if is_2x:
         title = "2x"
         if is_weekend:
-            line1 = "●  Double limits active"
-            line2 = "All weekend — no reset until Monday"
+            line1 = "You're on double limits"
+            line2 = "All weekend — resets Monday"
         else:
             peak_pt = (now_pt.replace(hour=5, minute=0, second=0, microsecond=0)
                        if hour < 5 else
                        (now_pt + timedelta(days=1)).replace(
                            hour=5, minute=0, second=0, microsecond=0))
             mins_until = int((peak_pt - now_pt).total_seconds() // 60)
-            line1 = "●  Double limits active"
-            line2 = f"↻  Resets in {mins_to_str(mins_until)} — at {pt_to_wib_str(peak_pt)}"
+            line1 = "You're on double limits"
+            line2 = f"Until {pt_to_wib_str(peak_pt)}  ·  {mins_to_str(mins_until)} left"
     else:
         title = "1x"
         resume_pt  = now_pt.replace(hour=11, minute=0, second=0, microsecond=0)
         mins_until = int((resume_pt - now_pt).total_seconds() // 60)
-        line1 = "○  Normal limits right now"
-        line2 = f"↻  Double limits in {mins_to_str(mins_until)} — at {pt_to_wib_str(resume_pt)}"
+        line1 = "Standard limits now"
+        line2 = f"2× at {pt_to_wib_str(resume_pt)}  ·  in {mins_to_str(mins_until)}"
 
     return dict(title=title, line1=line1, line2=line2)
 
 
-
-def noop(_): pass
+def _white_attr(text):
+    """White attributed string — keeps text bright on dark menu even when item is disabled."""
+    return NSAttributedString.alloc().initWithString_attributes_(
+        text, {NSForegroundColorAttributeName: NSColor.whiteColor()}
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -128,17 +132,25 @@ class Claude2xApp(rumps.App):
         self._frames      = frames
         self._frame_index = 0
 
+        # Info items have no callback → disabled by AppKit (no hover highlight).
+        # White attributed titles are applied in _setup_appearance once the menu exists.
         self.menu = [
-            rumps.MenuItem("line1", callback=noop),
-            rumps.MenuItem("line2", callback=noop),
+            rumps.MenuItem("line1"),
+            rumps.MenuItem("line2"),
             rumps.separator,
-            rumps.MenuItem("When you get double limits:", callback=noop),
-            rumps.MenuItem("  • Weeknights  7pm – 1am WIB", callback=noop),
-            rumps.MenuItem("  • All weekend, all day", callback=noop),
+            rumps.MenuItem("sched_header"),
+            rumps.MenuItem("sched_1"),
+            rumps.MenuItem("sched_2"),
             rumps.separator,
             rumps.MenuItem("Start at Login", callback=self.toggle_login),
             rumps.separator,
         ]
+
+        # Set static schedule copy
+        self.menu["sched_header"].title = "2× is active:"
+        self.menu["sched_1"].title      = "  •  Mon–Fri   7 PM – 1 AM WIB"
+        self.menu["sched_2"].title      = "  •  Sat–Sun   All day"
+
         self.menu["Start at Login"].state = is_login_enabled()
         self.update_status()
 
@@ -147,6 +159,14 @@ class Claude2xApp(rumps.App):
         try:
             dark = NSAppearance.appearanceNamed_(NSAppearanceNameDarkAqua)
             self._nsapp.nsstatusitem.menu().setAppearance_(dark)
+
+            # Disable all info items (removes hover highlight) and force white text
+            for key in ["line1", "line2", "sched_header", "sched_1", "sched_2"]:
+                item    = self.menu[key]
+                ns_item = item._menuitem
+                ns_item.setEnabled_(False)
+                ns_item.setAttributedTitle_(_white_attr(item.title))
+
             sender.stop()
         except Exception:
             pass
@@ -170,9 +190,16 @@ class Claude2xApp(rumps.App):
     def update_status(self):
         is_2x, now_pt = get_status()
         content = build_menu_content(is_2x, now_pt)
-        self.title                   = content["title"]
-        self.menu["line1"].title     = content["line1"]
-        self.menu["line2"].title     = content["line2"]
+        self.title = content["title"]
+
+        for key in ["line1", "line2"]:
+            item    = self.menu[key]
+            item.title = content[key]
+            # Keep attributed title in sync so white color persists after refresh
+            try:
+                item._menuitem.setAttributedTitle_(_white_attr(item.title))
+            except Exception:
+                pass
 
 
 if __name__ == "__main__":
