@@ -83,4 +83,22 @@ The dropdown shows a live countdown to the next state change, in your local time
 
 ---
 
+## Disclaimer
+
+This app is an independent, open-source tool and is **not affiliated with, endorsed by, or connected to Anthropic** in any way.
+
+The double usage promotion is entirely Anthropic's initiative. This app only reads your local clock and displays the schedule as publicly announced by [@claudeai on X](https://x.com/claudeai/status/2032911276226257206). The promotion may start, pause, change, or end at any time solely at Anthropic's discretion — this app has no control over that.
+
+Use it as a convenience reminder, not as a guarantee of any usage benefit.
+
+<br>
+
+## License
+
+MIT © 2026 [swidaryanto](https://github.com/swidaryanto) — see [LICENSE](./LICENSE) for full text.
+
+<br>
+
+---
+
 Made with ☕ by [@swidaryanto](https://github.com/swidaryanto)
