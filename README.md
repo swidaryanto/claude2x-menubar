@@ -1,88 +1,86 @@
 # Claude 2x Menubar
 
-A tiny macOS menubar app that tells you **when you're getting double Claude usage** — so you always know the best time to work.
+Know exactly when Claude gives you double the usage — right from your menubar.
+
+No more guessing the timezone. No more missing your best window to work.
 
 <br>
 
-## Install
+## Get it in 2 steps
 
-### Option A — Homebrew *(recommended)*
-
-If you have [Homebrew](https://brew.sh) installed, paste this in Terminal:
+Open Terminal (`⌘ Space` → type `Terminal` → Enter):
 
 ```bash
-brew install --cask swidaryanto/tap/claude2x
+brew install swidaryanto/tap/claude2x
+brew services start swidaryanto/tap/claude2x
 ```
 
-No Gatekeeper prompts. Uninstall anytime with `brew uninstall --cask claude2x`.
+That's it. The icon lives in your menubar and wakes up automatically every time you log in.
 
 <br>
 
-### Option B — DMG
-
-**[→ Download Claude2x.dmg](https://github.com/swidaryanto/claude2x-menubar/releases/latest/download/Claude2x.dmg)**
-
-1. Open `Claude2x.dmg`
-2. Drag **Claude 2x** into your Applications folder
-3. **Right-click** Claude 2x → **Open** → **Open** again when macOS asks
-4. The icon appears in your menubar instantly
-
-> **To uninstall**, drag **Claude 2x** from Applications to Trash.
+> **Don't have Homebrew?** Install it first at [brew.sh](https://brew.sh) — it takes about 2 minutes.
 
 <br>
 
-## What is the 2x promotion?
+**To stop it:**
+```bash
+brew services stop claude2x
+```
 
-Anthropic is doubling usage limits as a thank-you to everyone using Claude — across Claude.ai, Claude Code, and all plans (Free, Pro, Max, and Team). No setup needed. It's automatic.
+**To uninstall:**
+```bash
+brew services stop claude2x && brew uninstall claude2x
+```
 
 <br>
 
-### When you get double limits
+## What you'll see
 
-| Day | Time (WIB · GMT+7) | Time (PT · US) |
+| Icon | Means |
+|---|---|
+| `2x` | Double limits active — best time to use Claude |
+| `1x` | Standard limits right now |
+
+Click the icon anytime for a live countdown to the next switch, shown in your local time **(WIB · GMT+7)**.
+
+<br>
+
+## When does 2x kick in?
+
+Anthropic doubles usage limits outside peak hours — a thank-you to everyone using Claude.
+
+| Day | Your time (WIB) | US time (PT) |
 |---|---|---|
 | Monday – Friday | 7:00 PM – 1:00 AM | 5:00 AM – 11:00 AM |
 | Saturday – Sunday | All day | All day |
 
-Works on all plans — Free, Pro, Max, and Team. Applies everywhere you use Claude, including Claude Code.
+Works across all plans (Free, Pro, Max, Team) and everywhere you use Claude — including Claude Code.
 
 <br>
 
-## What the app shows you
+## What makes it tick
 
-| State | Menubar | What it means |
-|---|---|---|
-| 🟢 Active | `2x` | You're in the double-limit window — great time to use Claude |
-| ⚪ Normal | `1x` | Standard limits apply right now |
-
-The dropdown shows a live countdown to the next state change, in your local time (WIB).
-
-<br>
-
-## Features
-
-- **Live status** — updates every 30 seconds
-- **Animated icon** — smooth floating animation
-- **Countdown in WIB** — no mental timezone math
-- **Auto-starts at login** — always running, zero maintenance
+- Animated icon that floats in your menubar — you'll notice it
+- Live countdown so you know exactly how long until the next switch
+- Times shown in WIB — no timezone math needed
+- Starts automatically at login, runs quietly in the background
 
 <br>
 
 ---
 
-## Disclaimer
+## Heads up
 
-This app is an independent, open-source tool and is **not affiliated with, endorsed by, or connected to Anthropic** in any way.
+This is an independent, open-source tool. It's **not affiliated with or endorsed by Anthropic** in any way.
 
-The double usage promotion is entirely Anthropic's initiative. This app only reads your local clock and displays the schedule as publicly announced by [@claudeai on X](https://x.com/claudeai/status/2032911276226257206). The promotion may start, pause, change, or end at any time solely at Anthropic's discretion — this app has no control over that.
-
-Use it as a convenience reminder, not as a guarantee of any usage benefit.
+The 2x promotion is fully Anthropic's call — they can change, pause, or end it at any time. This app just reads your clock and shows the schedule [as announced by @claudeai](https://x.com/claudeai/status/2032911276226257206). Think of it as a handy reminder, not a guarantee.
 
 <br>
 
 ## License
 
-MIT © 2026 [swidaryanto](https://github.com/swidaryanto) — see [LICENSE](./LICENSE) for full text.
+MIT © 2026 [swidaryanto](https://github.com/swidaryanto) — see [LICENSE](./LICENSE)
 
 <br>
 
