@@ -2,8 +2,6 @@
 
 A tiny macOS menubar app that tells you **when you're getting double Claude usage** — so you always know the best time to work.
 
----
-
 ## Download
 
 **[→ Download Claude2x.dmg](https://github.com/swidaryanto/claude2x-menubar/releases/latest/download/Claude2x.dmg)**
@@ -14,8 +12,6 @@ A tiny macOS menubar app that tells you **when you're getting double Claude usag
 4. Click the icon → check **Start at Login** so it's always there
 
 > First time opening? macOS may ask you to confirm. Go to **System Settings → Privacy & Security → Open Anyway**.
-
----
 
 ## What is the 2x promotion?
 
@@ -30,8 +26,6 @@ Anthropic is doubling usage limits as a thank-you to everyone using Claude — a
 
 **Promotion runs:** Mar 15 – Mar 29, 2026
 
----
-
 ## What the app shows you
 
 | State | Menubar | What it means |
@@ -41,8 +35,6 @@ Anthropic is doubling usage limits as a thank-you to everyone using Claude — a
 
 The dropdown shows a live countdown to the next state change, in your local time (WIB).
 
----
-
 ## Features
 
 - **Live status** — updates every 30 seconds
@@ -50,26 +42,5 @@ The dropdown shows a live countdown to the next state change, in your local time
 - **Expiry reminder** — tracks how many days are left in the promotion
 - **Start at Login** — one click, always running
 - **Dark menu** — WCAG-compliant contrast, easy to read
-
----
-
-## Run from source
-
-```bash
-pip3 install rumps Pillow pytz numpy
-python3 claude2x.py
-```
-
----
-
-## Build DMG yourself
-
-```bash
-pip3 install py2app
-python3 setup.py py2app
-hdiutil create -volname "Claude 2x" -srcfolder dist/Claude2x.app -ov -format UDZO Claude2x.dmg
-```
-
----
 
 Made with ☕ by [@swidaryanto](https://github.com/swidaryanto)
