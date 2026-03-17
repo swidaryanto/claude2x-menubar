@@ -1,6 +1,8 @@
 build/
 dist/
+dist_swift/
 *.dmg
 __pycache__/
 *.pyc
 .DS_Store
+swift/Claude2x_bin
