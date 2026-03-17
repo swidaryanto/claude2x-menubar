@@ -32,8 +32,6 @@ PLIST_PATH  = os.path.expanduser(f"~/Library/LaunchAgents/{PLIST_LABEL}.plist")
 SCRIPT_PATH = os.path.abspath(__file__)
 PYTHON_BIN  = "/Library/Frameworks/Python.framework/Versions/3.10/bin/python3"
 
-EXPIRES_WIB = WIB.localize(datetime(2026, 3, 29, 23, 59, 59))
-
 
 # ---------------------------------------------------------------------------
 # Login item helpers
@@ -110,20 +108,6 @@ def build_menu_content(is_2x, now_pt):
     return dict(title=title, line1=line1, line2=line2)
 
 
-def build_expires_line(now_pt):
-    delta = EXPIRES_WIB - now_pt.astimezone(WIB)
-    days  = delta.days
-    if delta.total_seconds() <= 0:
-        return "◆  This benefit has ended (Mar 29)"
-    elif days == 0:
-        return "◆  Ends today — make the most of it"
-    elif days == 1:
-        return "◆  Ends tomorrow, Mar 29"
-    elif days <= 5:
-        return f"◆  Ends Mar 29  ·  {days} days left"
-    else:
-        return f"◆  Ends Mar 29, 2026  ·  {days} days left"
-
 
 def noop(_): pass
 
@@ -148,8 +132,6 @@ class Claude2xApp(rumps.App):
             rumps.MenuItem("When you get double limits:", callback=noop),
             rumps.MenuItem("  • Weeknights  7pm – 1am WIB", callback=noop),
             rumps.MenuItem("  • All weekend, all day", callback=noop),
-            rumps.separator,
-            rumps.MenuItem("expires_line", callback=noop),
             rumps.separator,
             rumps.MenuItem("Start at Login", callback=self.toggle_login),
             rumps.separator,
@@ -188,7 +170,6 @@ class Claude2xApp(rumps.App):
         self.title                   = content["title"]
         self.menu["line1"].title     = content["line1"]
         self.menu["line2"].title     = content["line2"]
-        self.menu["expires_line"].title = build_expires_line(now_pt)
 
 
 if __name__ == "__main__":

@@ -37,7 +37,7 @@ Anthropic is doubling usage limits as a thank-you to everyone using Claude — a
 | Monday – Friday | 7:00 PM – 1:00 AM | 5:00 AM – 11:00 AM |
 | Saturday – Sunday | All day | All day |
 
-**Promotion runs:** Mar 15 – Mar 29, 2026
+Works on all plans — Free, Pro, Max, and Team. Applies everywhere you use Claude, including Claude Code.
 
 <br>
 
